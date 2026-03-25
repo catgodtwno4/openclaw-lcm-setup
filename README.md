@@ -124,9 +124,9 @@ Agent 會在需要部署 LCM 時自動載入此 Skill。
 | [catgodtwno4/lossless-claw](https://github.com/catgodtwno4/lossless-claw) | Fork（含修復分支） |
 | [openclaw/openclaw](https://github.com/openclaw/openclaw) | OpenClaw 主專案 |
 | [catgodtwno4/openclaw-five-layer-memory-nas](https://github.com/catgodtwno4/openclaw-five-layer-memory-nas) | 五層記憶棧 NAS 部署指南 |
-| [catgodtwno4/openclaw-nextjs-dashboard](https://github.com/catgodtwno4/openclaw-nextjs-dashboard) | OpenClaw Dashboard |
-| [catgodtwno4/openclaw-browser-skill](https://github.com/catgodtwno4/openclaw-browser-skill) | 瀏覽器操作 Skill |
-| [catgodtwno4/openclaw-im-control-skill](https://github.com/catgodtwno4/openclaw-im-control-skill) | 媒體傳送 Skill |
+| [catgodtwno4/openclaw-dashboard](https://github.com/catgodtwno4/openclaw-dashboard) | OpenClaw Dashboard |
+| [catgodtwno4/openclaw-browser](https://github.com/catgodtwno4/openclaw-browser) | 瀏覽器操作 Skill |
+| [catgodtwno4/openclaw-im-control](https://github.com/catgodtwno4/openclaw-im-control) | 媒體傳送 Skill |
 
 ## 許可證
 
