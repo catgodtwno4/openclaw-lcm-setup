@@ -96,12 +96,14 @@ sqlite3 ~/.openclaw/lcm.db \
 |------|------|------|----|
 | 假陽性 auth error | `stripAuthErrors()` 誤判對話內容 | 改 `pickAuthInspectionValue()` 回傳 `{}` | [#178](https://github.com/Martian-Engineering/lossless-claw/pull/178) |
 | 混搭 provider 401 | `getApiKey()` 缺 config fallback | launchd env var + v0.5.1 升級 | [#179](https://github.com/Martian-Engineering/lossless-claw/pull/179) |
+| models.json env-marker 覆蓋 | Gateway 重啟覆寫 apiKey 為字面量 | launchd env var 或改用 Anthropic | [ops-lcm-fix](https://github.com/catgodtwno1/ops-lcm-fix) |
 | Compaction 不觸發 | 缺 `contextEngine` slot | 設 `plugins.slots.contextEngine` | — |
 
 ## 實測數據
 
 | 機器 | 主模型 | LCM 模型 | Summaries | 漂移 | Errors |
 |------|--------|---------|-----------|------|--------|
+| Scott#1 | Claude | Haiku 4.5 | 正常 | — | Bug 1 假陽性（已 patch） |
 | Scott#4 | Claude Opus | M2.7 HS | 200+ | 零 | 零 |
 | Scott#2 | Claude Opus | M2.7 HS | 40+ | 零 | 零 |
 
