@@ -214,12 +214,14 @@ grep -A1 'minimax' ~/.openclaw/models.json | grep apiKey
 
 **解法（三選一，推薦方案 A）**：
 
-- **方案 A（推薦）**：launchd plist 加 env var（見 3.3 節）→ `process.env.MINIMAX_API_KEY` 有值，繞過 models.json
-- **方案 B**：v0.5.1 已含 `findProviderConfigValue` 修復 → 確保 `models.providers.minimax.apiKey` 在 openclaw.json 中有真值
+- **方案 A（推薦）**：launchd plist 加 env var（見 3.3 節）→ `process.env.MINIMAX_API_KEY` 有值
+- **方案 B**：確保 `models.providers.minimax.apiKey` 在 openclaw.json 中有真值（v0.5.1 已含 `findProviderConfigValue` fallback）
 - **方案 C**（僅 workaround）：summaryModel 改用 Anthropic（如 `claude-haiku-4-5`），避開 MiniMax
 
-**相關 PR/Issue**：
-- 已提交 PR：[Martian-Engineering/lossless-claw#179](https://github.com/Martian-Engineering/lossless-claw/pull/179)
+> ⚠️ 注意：v0.5.1 原版已包含 `findProviderConfigValue` 的 apiKey fallback，不需要額外 patch。
+> 之前 PR #179 基於誤判（fork 基於舊 commit，diff 看似新增但實為原版已有），已關閉。
+
+**相關資料**：
 - Scott#1 診斷記錄：[catgodtwno1/ops-lcm-fix](https://github.com/catgodtwno1/ops-lcm-fix)
 
 ### 5.3 Compaction 不觸發
@@ -288,7 +290,7 @@ openclaw config set plugins.slots.contextEngine lossless-claw
 | LCM 論文 | [Voltropy LCM Paper](https://papers.voltropy.com/LCM) |
 | 視覺化展示 | [losslesscontext.ai](https://losslesscontext.ai) |
 | 假陽性修復 PR | [#178](https://github.com/Martian-Engineering/lossless-claw/pull/178) |
-| getApiKey 修復 PR | [#179](https://github.com/Martian-Engineering/lossless-claw/pull/179) |
+| ~~getApiKey PR~~ | [#179](https://github.com/Martian-Engineering/lossless-claw/pull/179)（已關閉，v0.5.1 原版已含修復） |
 | Scott#1 診斷記錄 | [catgodtwno1/ops-lcm-fix](https://github.com/catgodtwno1/ops-lcm-fix) |
 
 <!-- 在此追加新的部署經驗 -->
