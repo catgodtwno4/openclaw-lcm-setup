@@ -127,7 +127,7 @@ ls ~/Library/LaunchAgents/ai.openclaw.gateway.plist
 # <string>你的 MiniMax API Key</string>
 
 # 或用 openclaw 內建（如果支援）
-openclaw config set env.MINIMAX_API_KEY "YOUR_MINIMAX_API_KEY"
+openclaw config set env.MINIMAX_API_KEY "sk-cp-xxx"
 
 # 重啟 Gateway 生效
 launchctl kickstart -k gui/$(id -u)/ai.openclaw.gateway
@@ -199,12 +199,28 @@ launchctl kickstart -k gui/$(id -u)/ai.openclaw.gateway
 
 **症狀**：主模型正常但 LCM 呼叫 401 invalid api key。
 
-**根因**：`getApiKey()` 的 fallback 鏈不包含 `models.providers.*.apiKey`，只有 `complete()` 函數有。
+**根因有兩層**：
 
-**解法**：
-- v0.5.1 已含 `findProviderConfigValue` 修復
-- launchd plist 加對應 env var（見 3.3 節）
+1. **`getApiKey()` 缺 config fallback**：fallback 鏈不包含 `models.providers.*.apiKey`，只有 `complete()` 函數有。
+2. **`models.json` env-marker 覆蓋**（Scott#1 發現）：Gateway 重啟時自動重新生成 `~/.openclaw/models.json`，將 apiKey 寫為字面量字串 `"MINIMAX_API_KEY"`（env 變數名而非實際值）。手動修改會在下次重啟被覆蓋。
+
+**如何判斷是哪個根因**：
+```bash
+# 檢查 models.json 裡的 apiKey 是字面量還是真值
+grep -A1 'minimax' ~/.openclaw/models.json | grep apiKey
+# 如果顯示 "MINIMAX_API_KEY"（沒有 sk- 前綴）→ Bug 2
+# 如果顯示真實 key 或為空 → Bug 1
+```
+
+**解法（三選一，推薦方案 A）**：
+
+- **方案 A（推薦）**：launchd plist 加 env var（見 3.3 節）→ `process.env.MINIMAX_API_KEY` 有值，繞過 models.json
+- **方案 B**：v0.5.1 已含 `findProviderConfigValue` 修復 → 確保 `models.providers.minimax.apiKey` 在 openclaw.json 中有真值
+- **方案 C**（僅 workaround）：summaryModel 改用 Anthropic（如 `claude-haiku-4-5`），避開 MiniMax
+
+**相關 PR/Issue**：
 - 已提交 PR：[Martian-Engineering/lossless-claw#179](https://github.com/Martian-Engineering/lossless-claw/pull/179)
+- Scott#1 診斷記錄：[catgodtwno1/ops-lcm-fix](https://github.com/catgodtwno1/ops-lcm-fix)
 
 ### 5.3 Compaction 不觸發
 
@@ -259,8 +275,9 @@ openclaw config set plugins.slots.contextEngine lossless-claw
 
 | 機器 | 主模型 | LCM 模型 | Summaries | 漂移 | Errors |
 |------|--------|---------|-----------|------|--------|
+| Scott#1 | Claude | Haiku 4.5 | 正常 | — | Bug 1 假陽性（已 patch） |
+| Scott#2 | Claude Opus | M2.7 HS | 40+ | 零 | 零（修復後） |
 | Scott#4 | Claude Opus | M2.7 HS | 200+ | 零 | 零 |
-| Scott#2 | Claude Opus | M2.7 HS | 40+ | 零 | 零 |
 
 ## 八、相關資源
 
@@ -272,5 +289,6 @@ openclaw config set plugins.slots.contextEngine lossless-claw
 | 視覺化展示 | [losslesscontext.ai](https://losslesscontext.ai) |
 | 假陽性修復 PR | [#178](https://github.com/Martian-Engineering/lossless-claw/pull/178) |
 | getApiKey 修復 PR | [#179](https://github.com/Martian-Engineering/lossless-claw/pull/179) |
+| Scott#1 診斷記錄 | [catgodtwno1/ops-lcm-fix](https://github.com/catgodtwno1/ops-lcm-fix) |
 
 <!-- 在此追加新的部署經驗 -->
